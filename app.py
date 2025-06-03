@@ -65,6 +65,33 @@ def find_motif_positions(seq, motif):
             positions.append(i+1)
     return positions
 
+def highlight_motif(seq, motif):
+    motif = motif.upper()
+    mlen = len(motif)
+    i = 0
+    result = ''
+    while i <= len(seq) - mlen:
+        if seq[i:i+mlen] == motif:
+            # Color pastel para resaltar: fondo rosado suave, texto negro
+            result += (
+                f'<span '
+                f'style="background-color:#ffaeae; '
+                f'color:#000000; '
+                f'font-weight:bold; '
+                f'padding:2px 4px; '
+                f'border-radius:3px">'
+                f'{seq[i:i+mlen]}</span>'
+            )
+            i += mlen
+        else:
+            # Añadimos el carácter normal sin estilo extra
+            result += seq[i]
+            i += 1
+    # Agrega cualquier resto al final (si el motivo no cabe)
+    result += seq[i:]
+    return result
+
+
 # Streamlit app
 def main():
     st.set_page_config(page_title="Genomics Dashboard", layout="wide")
@@ -199,6 +226,32 @@ def main():
                 motif_results.append({'ID': header, 'Posiciones': positions, 'Conteo': len(positions)})
             df_motif = pd.DataFrame(motif_results)
             st.dataframe(df_motif)
+
+            st.subheader("🧬 Visualización de Secuencias con Motivo Resaltado")
+            for row in motif_results:
+                highlighted = highlight_motif(sequences[row['ID']], motif)
+                st.markdown(f"**{row['ID']}** ({row['Conteo']} ocurrencias)", unsafe_allow_html=True)
+                st.markdown(
+                    f"""
+                    <div style="
+                        overflow-x: auto;
+                        white-space: nowrap;
+                        background-color: #ffffff;
+                        border: 1px solid #e0e0e0;
+                        border-radius: 6px;
+                        padding: 12px;
+                        margin-bottom: 20px;
+                        font-family: monospace;
+                        font-size: 14px;
+                        color: #333333;
+                    ">
+                        {highlighted}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+
         else:
             st.info("Ingresa un motivo en la barra lateral para buscar en las secuencias.")
 
