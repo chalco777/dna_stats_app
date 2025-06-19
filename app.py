@@ -7,7 +7,6 @@ Genomics Dashboard – tabs con descripciones
 from __future__ import annotations
 import os, re, json, shutil, subprocess, tempfile, pathlib
 from collections import Counter
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -76,6 +75,32 @@ def align_fasta(fa_txt: str, alg: str) -> str:
         _run(['mafft', '--auto', '--thread', str(CPU_ALL), '--quiet', inp], stdout=outp)
     return outp.read_text()
 
+def compute_identity_matrix(aligned_seqs: dict[str, str]) -> pd.DataFrame:
+    """Calcula la matriz de identidad entre secuencias alineadas."""
+    species = list(aligned_seqs.keys())
+    n = len(species)
+    L = len(next(iter(aligned_seqs.values())))
+    mat = np.zeros((n, n))
+    
+    seq_list = [aligned_seqs[sp] for sp in species]
+    
+    for i in range(n):
+        s1 = seq_list[i]
+        for j in range(i, n):
+            s2 = seq_list[j]
+            matches = 0
+            total = 0
+            for k in range(L):
+                if s1[k] == '-' and s2[k] == '-':
+                    continue
+                total += 1
+                if s1[k] == s2[k]:
+                    matches += 1
+            identity = matches / total * 100 if total > 0 else 0
+            mat[i, j] = identity
+            mat[j, i] = identity
+    
+    return pd.DataFrame(mat, index=species, columns=species)
 
 def _fasttree_exe():
     for e in ('FastTreeMP', 'fasttreeMP', 'FastTree', 'fasttree'):
@@ -232,12 +257,53 @@ def main():
 
     # 4️⃣ Alineamiento
     with tab_aln:
+
+        st.subheader("Matriz de Identidad entre Secuencias")
+        st.markdown(
+            "**Cálculo de identidad:** La matriz se calcula después del alineamiento múltiple, "
+            "donde todas las secuencias tienen la misma longitud gracias a la inserción de gaps (`-`). "
+            "Para cada par de secuencias, comparamos posición por posición:  \n"
+            "- **Matches**: Cuando ambos caracteres son idénticos (misma base en ambas secuencias)  \n"
+            "- **Posiciones válidas**: Columnas con al menos un nucleótido (se ignoran dobles gaps)  \n"
+            "- **% Identidad** = (Nº matches / Nº posiciones válidas) × 100  \n"
+            "Este método estándar garantiza comparaciones justas entre secuencias de diferentes longitudes originales."
+        )
+        
+        with st.spinner('Calculando similitudes...'):
+            aligned_seqs = parse_fasta(aln_txt)
+            identity_df = compute_identity_matrix(aligned_seqs)
+        
+        # Formatear la matriz para visualización
+        display_df = identity_df.copy()
+        np.fill_diagonal(display_df.values, 100)  # Asegurar diagonal en 100%
+        
+        # Formatear valores para mostrar 2 decimales
+        formatted_df = display_df.applymap(lambda x: f"{x:.2f}%")
+        
+        # Resaltar valores bajos
+        def style_low_values(val):
+            num = float(val.rstrip('%'))
+            color = "#AA0909" if num < 50 else "#70e807" if num < 75 else "#029a49"
+            return f'background-color: {color}; font-weight: bold'
+        
+        st.dataframe(formatted_df.style.applymap(style_low_values).format(precision=2),height=min(800, 50 + 35 * len(identity_df)))
+        
+        # Descargar matriz como CSV
+        csv = display_df.round(2).to_csv().encode('utf-8')
+        st.download_button(
+            "Descargar matriz completa como CSV",
+            csv,
+            "matriz_identidad.csv",
+            "text/csv"
+        )
+        
         st.markdown(
             "**Alineamiento múltiple**  \n"
             "Permite comparar posiciones homólogas entre todas las secuencias.  "
             "Es la base para la inferencia filogenética y para detectar sitios "
             "conservados o mutaciones específicas."
         )
+
         st.code(aln_txt[:2000] + ('…' if len(aln_txt) > 2000 else ''), language='fasta')
         st.download_button('Descargar alineamiento', aln_txt, 'alignment.fa')
 
@@ -245,7 +311,7 @@ def main():
     with tab_tree:
         st.markdown(
             "**Árbol filogenético**  \n"
-            "Visualiza las relaciones evolutivas inferidas. El visor interactivo "
+            "Visualiza las relaciones evolutivas inferidas. Este visor interactivo "
             "permite acercar, desplazar y explorar etiquetas sin perder resolución."
         )
         components.html(phylocanvas_html(nwk), height=650, scrolling=False)
