@@ -296,15 +296,6 @@ def main():
             "matriz_identidad.csv",
             "text/csv"
         )
-        
-        st.markdown(
-            "**Alineamiento múltiple**  \n"
-            "Permite comparar posiciones homólogas entre todas las secuencias.  "
-            "Es la base para la inferencia filogenética y para detectar sitios "
-            "conservados o mutaciones específicas."
-        )
-
-        st.code(aln_txt[:2000] + ('…' if len(aln_txt) > 2000 else ''), language='fasta')
         st.download_button('Descargar alineamiento', aln_txt, 'alignment.fa')
 
     # 5️⃣ Árbol & visor
