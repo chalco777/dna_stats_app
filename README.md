@@ -66,12 +66,12 @@ changing k‑mers, motifs, or story mode doesn’t recompute everything.
 
 ## 📂 Project structure
 
-├── app_en.py \# English version 
-├── app_es.py \# Spanish version 
-├── requirements.txt 
-├── environment.yml 
-├── data/ \# optional example FASTA files 
-├── docs/ \# screenshots
+├── app_en.py \# English version  
+├── app_es.py \# Spanish version  
+├── requirements.tx  
+├── environment.yml  
+├── data/ \# optional example FASTA files  
+├── docs/ \# screenshots  
 
 ------------------------------------------------------------------------
 
@@ -187,5 +187,6 @@ relevant.
 **Julio Orellana-Montes**  
 <julio.orellana@upch.pe>
 
-**Adrian Chalco-Gonzalez**
+**Adrian Chalco-Gonzalez**  
 <adrian.chalco@upch.pe>
+
