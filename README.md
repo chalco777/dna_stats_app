@@ -25,15 +25,15 @@ changing k‑mers, motifs, or story mode doesn’t recompute everything.
 1.  **Clone**
 
     ``` bash
-    git clone https://github.com/YOURUSER/genomics-dashboard.git
-    cd genomics-dashboard
+    git clone https://github.com/chalco777/dna_stats_app
+    cd dna_stats_app
     ```
 
 2.  **Create environment (conda/mamba) or use pip**
 
     ``` bash
     mamba env create -f environment.yml
-    mamba genomicsdashboard
+    mamba activate genomics-dashboard
     ```
 
 3.  **(Recommended) Install external binaries**
@@ -66,9 +66,12 @@ changing k‑mers, motifs, or story mode doesn’t recompute everything.
 
 ## 📂 Project structure
 
-├── app_en.py \# English version ├── app_es.py \# Spanish version ├──
-requirements.txt ├── environment.yml ├── data/ \# optional example FASTA
-files ├── docs/ \# screenshots
+├── app_en.py \# English version 
+├── app_es.py \# Spanish version 
+├── requirements.txt 
+├── environment.yml 
+├── data/ \# optional example FASTA files 
+├── docs/ \# screenshots
 
 ------------------------------------------------------------------------
 
@@ -171,12 +174,6 @@ references):
 
 ------------------------------------------------------------------------
 
-## 📝 License
-
-Specify your license (MIT, GPL-3.0, etc.) and include a `LICENSE` file.
-
-------------------------------------------------------------------------
-
 ## 🤝 Contributing
 
 Issues and PRs are welcome.  
@@ -190,4 +187,5 @@ relevant.
 **Julio Orellana-Montes**  
 <julio.orellana@upch.pe>
 
-**Adrian Chalco-Gonzalez** <adrian.chalco@upch.pe>
+**Adrian Chalco-Gonzalez**
+<adrian.chalco@upch.pe>
