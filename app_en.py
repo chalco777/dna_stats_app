@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+__version__ = "0.1.0"
+
 """
-Genomics Dashboard – VERSION en_v3.py
+Genomics Dashboard – VERSION en_v0.1.0.py
 """
 
 from __future__ import annotations

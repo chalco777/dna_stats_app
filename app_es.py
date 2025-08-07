@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+__version__ = "0.1.0"
+
 """
-Genomics Dashboard – VERSIÓN CORREGIDA con st.session_state
-Ya no se recarga todo cuando cambias k-mer, motivo o historia
+Genomics Dashboard – VERSIÓN en español: es_v0.1.0.py
 """
 
 from __future__ import annotations
